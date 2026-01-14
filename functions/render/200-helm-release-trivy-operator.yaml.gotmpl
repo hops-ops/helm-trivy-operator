@@ -1,0 +1,45 @@
+# code: language=yaml
+#
+# Helm release for Trivy Operator
+#
+# Trivy Operator provides:
+# - Vulnerability scanning for container images
+# - SBOM (Software Bill of Materials) generation
+# - Kubernetes misconfiguration detection
+# - Exposed secrets scanning
+# - RBAC assessment
+#
+
+{{- $to := $state.trivyOperator }}
+
+---
+apiVersion: helm.m.crossplane.io/v1beta1
+kind: Release
+metadata:
+  name: {{ $to.releaseName }}
+  annotations:
+    {{ setResourceNameAnnotation "helm-release-trivy-operator" }}
+  labels: {{ $to.labels | toJson }}
+spec:
+  managementPolicies: {{ $to.managementPolicies | toJson }}
+  forProvider:
+    chart:
+      name: trivy-operator
+      repository: https://aquasecurity.github.io/helm-charts
+      version: 0.31.0
+    namespace: {{ $to.namespace }}
+    {{- if $to.overrideAllValues }}
+    values:
+      {{- toYaml $to.overrideAllValues | nindent 6 }}
+    {{- else }}
+    values:
+      fullnameOverride: trivy-operator
+      nameOverride: trivy-operator
+      {{- if $to.values }}
+      {{- toYaml $to.values | nindent 6 }}
+      {{- end }}
+    {{- end }}
+  rollbackLimit: 3
+  providerConfigRef:
+    name: {{ $to.providerConfigRef.name }}
+    kind: {{ $to.providerConfigRef.kind }}

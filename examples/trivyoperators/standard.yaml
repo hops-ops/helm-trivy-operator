@@ -1,0 +1,31 @@
+apiVersion: helm.hops.ops.com.ai/v1alpha1
+kind: TrivyOperator
+metadata:
+  name: trivy-operator
+  namespace: example-env
+spec:
+  clusterName: example-cluster
+  labels:
+    team: security
+  namespace: trivy-system
+  values:
+    # Enable vulnerability scanning
+    trivy:
+      ignoreUnfixed: true
+      severity: "CRITICAL,HIGH,MEDIUM"
+    # Enable all scanners
+    operator:
+      vulnerabilityScannerEnabled: true
+      configAuditScannerEnabled: true
+      rbacAssessmentScannerEnabled: true
+      infraAssessmentScannerEnabled: true
+      exposedSecretScannerEnabled: true
+      sbomGenerationEnabled: true
+    # Resource limits
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
