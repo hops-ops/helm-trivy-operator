@@ -31,13 +31,9 @@ spec:
     {{- if $to.overrideAllValues }}
     values:
       {{- toYaml $to.overrideAllValues | nindent 6 }}
-    {{- else }}
+    {{- else if $to.values }}
     values:
-      fullnameOverride: trivy-operator
-      nameOverride: trivy-operator
-      {{- if $to.values }}
       {{- toYaml $to.values | nindent 6 }}
-      {{- end }}
     {{- end }}
   rollbackLimit: 3
   providerConfigRef:
